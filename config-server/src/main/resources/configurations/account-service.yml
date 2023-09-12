@@ -8,9 +8,13 @@ eureka:
 server:
   port: 8070
 
+jwt:
+  secret: MiAVzqUXy5Tfr1kVIGpPMiAVzqUXy5Tfr1kVIGpP
+  expiration: 86400
+
 spring:
   application:
-    name: accounts
+    name: account-service
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/bilyoner_account_service_db
@@ -25,14 +29,14 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  zipkin:
-    base-url: http://localhost:9411
-
+#  zipkin:
+#    base-url: http://localhost:9411
+#
 #application:
 #  config:
 #    accounts-url: http://localhost:8222/accounts
-
-management:
-  tracing:
-    sampling:
-      probability: 1.0
+#
+#management:
+#  tracing:
+#    sampling:
+#      probability: 1.0

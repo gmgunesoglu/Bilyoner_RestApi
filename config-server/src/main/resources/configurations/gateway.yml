@@ -1,9 +1,5 @@
-eureka:
-  client:
-    register-with-eureka: false
-
 server:
-  port: 8222
+  port: 8080
 
 spring:
   application:
@@ -13,20 +9,53 @@ spring:
       discovery:
         locator:
           enabled: true
-      routes:
-        - id: coupons
-          uri: http://localhost:8090
-          predicates:
-            - Path=/coupons/**
-        - id: accounts
-          uri: http://localhost:8070
-          predicates:
-            - Path=/account/**
-  zipkin:
-    base-url: http://localhost:9411
 
-management:
-  tracing:
-    sampling:
-      probability: 1.0
+jwt:
+  secret: MiAVzqUXy5Tfr1kVIGpPMiAVzqUXy5Tfr1kVIGpP
+
+
+
+
+#eureka:
+#  client:
+#    register-with-eureka: false
+#
+#server:
+#  port: 8222
+#
+#spring:
+#  application:
+#    name: gateway
+#  cloud:
+#    gateway:
+#      discovery:
+#        locator:
+#          enabled: true
+#      routes:
+#        - id: coupons
+#          uri: http://localhost:8090
+#          predicates:
+#            - Path=/coupons/**
+#          filters:
+#            - AuthenticationFilter
+#        - id: accounts
+#          uri: http://localhost:8070
+#          predicates:
+#            - Path=/account/**
+#          filters:
+#            - AuthenticationFilter
+##          filters:    # olacak mı?
+##            - RewritePath=/account/(?<segment>.*), /$\{segment}
+##            - name: JwtFilter
+##              args:
+##                key: yourSecretKeyHere
+##                header: Authorization
+#
+#  zipkin:
+#    base-url: http://localhost:9411
+#
+#management:
+#  tracing:
+#    sampling:
+#      probability: 1.0
 
