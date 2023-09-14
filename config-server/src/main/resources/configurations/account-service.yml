@@ -9,8 +9,8 @@ server:
   port: 8070
 
 jwt:
-  secret: MiAVzqUXy5Tfr1kVIGpPMiAVzqUXy5Tfr1kVIGpP
-  expiration: 86400
+  SECRET_KEY: e34bc93bce34083f4dc6900e986019e7f08cf994c01046348dd69f8f05f00cb9
+  TOKEN_DURATION: 21600000  #6 saat
 
 spring:
   application:
@@ -29,6 +29,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  kafka:
+    bootstrap-servers: localhost:9092
 #  zipkin:
 #    base-url: http://localhost:9411
 #

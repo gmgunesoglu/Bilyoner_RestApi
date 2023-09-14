@@ -1,6 +1,6 @@
-package com.softtech.gateway.security;
+package com.softtech.gateway.filter;
 
-import com.softtech.gateway.services.JwtUtils;
+import com.softtech.gateway.exceptionhandling.GlobalRuntimeException;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -24,10 +24,11 @@ import java.util.function.Predicate;
 public class AuthenticationFilter implements GatewayFilter {
 
     private static final Map<String, List<String>> endPoints = new HashMap<>();
-    private JwtUtils jwtUtils;
     @Autowired
-    public AuthenticationFilter(JwtUtils jwtUtils) {
-        this.jwtUtils = jwtUtils;
+    private CurrentTokens currentTokens;
+
+    @Autowired
+    public AuthenticationFilter() {
         // account service end points
         endPoints.put("/account/test", Arrays.asList("VISITOR","MEMBER","ADMIN"));
         endPoints.put("/account/register", Arrays.asList("VISITOR","MEMBER","ADMIN"));
@@ -37,6 +38,7 @@ public class AuthenticationFilter implements GatewayFilter {
         endPoints.put("/account/", Arrays.asList("MEMBER","ADMIN"));
 
         endPoints.put("/coupons/test", Arrays.asList("VISITOR","MEMBER","ADMIN"));
+
     }
 
     @Override
@@ -54,13 +56,20 @@ public class AuthenticationFilter implements GatewayFilter {
             return chain.filter(exchange);
         }
 
-        // yetki gerekiyor token ı ve yetkiyi cache den çek.
+        // Token ı cache den kontrol et, varsa çek yoksa yetkisiz dön
+        final String authHeader = request.getHeaders().getFirst("Authorization");
+        if(authHeader == null || !authHeader.startsWith("Bearer ")){
+            return onError(exchange, HttpStatus.UNAUTHORIZED);
+        }
 
-
-        // gereken rol ile kullanıcının rolünü karşılaştır.
-        if (isSecured.test(request)) {
+        // bu token ı ben mi ürettiysem, kullanıcının yetkisi yeterlimi?
+        final String jwtToken = authHeader.substring(7);
+        final String userRole = currentTokens.getRoleOfToken(jwtToken);
+        if (userRole!=null && isSecured(request,userRole)) {
+            // yetkisi var
             return chain.filter(exchange);
         }else{
+            // yetkisi yok
             return onError(exchange, HttpStatus.UNAUTHORIZED);
         }
     }
@@ -71,17 +80,37 @@ public class AuthenticationFilter implements GatewayFilter {
         return response.setComplete();
     }
 
-    public Predicate<ServerHttpRequest> isSecured =
-            request -> {
-                String path = request.getURI().getPath();
-                List<String> allowedRoles = endPoints.get(path);
+    private ServerHttpResponse invalidJwt(ServerWebExchange exchange) {
+        ServerHttpResponse response = exchange.getResponse();
+        response.setStatusCode(HttpStatus.UNAUTHORIZED);
+        return response;
+    }
 
-                // Kullanıcının JWT içindeki rollerine göre erişim izni kontrol edilir.
-                String token = request.getHeaders().getFirst("Authorization");
-                token=token.substring(7);
-                Claims claims = jwtUtils.getClaims(token);
-                String userRole = claims.get("role", String.class);
-                System.out.println(userRole);
-                return allowedRoles.contains(userRole);
-            };
+//    public Predicate<ServerHttpRequest> isSecured =
+//            request -> {
+//                String path = request.getURI().getPath();
+//                List<String> allowedRoles = endPoints.get(path);
+//
+//                // Kullanıcının JWT içindeki rollerine göre erişim izni kontrol edilir.
+//                String token = request.getHeaders().getFirst("Authorization");
+//                token=token.substring(7);
+//                Claims claims = jwtUtils.getClaims(token);
+//                String userRole = claims.get("role", String.class);
+//                System.out.println(userRole);
+//                return allowedRoles.contains(userRole);
+//            };
+
+    private boolean isSecured(ServerHttpRequest request, String userRole){
+        String path = request.getURI().getPath();
+        List<String> allowedRoles = endPoints.get(path);
+        return allowedRoles.contains(userRole);
+    }
+
+    public void addToCache(String token, String userName, String role){
+        currentTokens.addToCache(token, userName, role);
+    }
+
+    public void removeFromCache(String token){
+        currentTokens.removeFromCache(token);
+    }
 }

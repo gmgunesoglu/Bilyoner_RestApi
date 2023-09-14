@@ -1,33 +1,39 @@
-#version: '3'
-#
-#services:
-#  postgresql:
-#    container_name: postgresql
-#    image: postgres
-#    environment:
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASSWORD: 123qweqwe
-#      PGDATA: /data/postgres
-#    volumes:
-#      - postgres:/data/postgres
-#    ports:
-#      - "5432:5432"
-#    networks:
-#      - postgresql
-#    restart: unless-stopped
-#  zipkin:
-#    container_name: zipkin
-#    image: openzipkin/zipkin
-#    ports:
-#      - "9411:9411"
-#    networks:
-#      - zipkin
-#
-#networks:
-#  postgresql:
-#    driver: bridge
-#  zipkin:
-#    driver: bridge
-#
-#volumes:
-#  postgres:
+version: '3'
+
+services:
+  postgresql:
+    container_name: postgresql
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123qweqwe
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - postgresql
+    restart: unless-stopped
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.9.11-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  zipkin:
+    container_name: zipkin
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - zipkin
+
+networks:
+  postgresql:
+    driver: bridge
+  zipkin:
+    driver: bridge
+
+volumes:
+  postgres:

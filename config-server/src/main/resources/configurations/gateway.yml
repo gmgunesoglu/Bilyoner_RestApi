@@ -9,11 +9,11 @@ spring:
       discovery:
         locator:
           enabled: true
+  kafka:
+    bootstrap-servers: localhost:9092
 
 jwt:
-  secret: MiAVzqUXy5Tfr1kVIGpPMiAVzqUXy5Tfr1kVIGpP
-
-
+  TOKEN_DURATION: 21600000  #6 saat
 
 
 #eureka:
