@@ -28,7 +28,7 @@ public class JwtUtil {
     }
 
     public Claims getClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJwt(token).getBody();
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
     public Date getExpirationDate(String token) {
@@ -53,6 +53,7 @@ public class JwtUtil {
 
     public Long getId(String jwt) {
         Claims claims = getClaims(jwt);
-        return Long.parseLong((String)claims.get("id"));
+        String id = (String) claims.get("id");
+        return Long.parseLong(id);
     }
 }

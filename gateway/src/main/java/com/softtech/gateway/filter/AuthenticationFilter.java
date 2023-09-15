@@ -35,7 +35,9 @@ public class AuthenticationFilter implements GatewayFilter {
         endPoints.put("/account/login", Arrays.asList("VISITOR","MEMBER","ADMIN"));
         endPoints.put("/account/logout", Arrays.asList("MEMBER","ADMIN"));
         endPoints.put("/account/change-password", Arrays.asList("MEMBER","ADMIN"));
-        endPoints.put("/account/", Arrays.asList("MEMBER","ADMIN"));
+        endPoints.put("/account", Arrays.asList("MEMBER","ADMIN"));
+        endPoints.put("/balance/update", Arrays.asList("MEMBER","ADMIN"));
+
 
         endPoints.put("/coupons/test", Arrays.asList("VISITOR","MEMBER","ADMIN"));
 
@@ -80,37 +82,9 @@ public class AuthenticationFilter implements GatewayFilter {
         return response.setComplete();
     }
 
-    private ServerHttpResponse invalidJwt(ServerWebExchange exchange) {
-        ServerHttpResponse response = exchange.getResponse();
-        response.setStatusCode(HttpStatus.UNAUTHORIZED);
-        return response;
-    }
-
-//    public Predicate<ServerHttpRequest> isSecured =
-//            request -> {
-//                String path = request.getURI().getPath();
-//                List<String> allowedRoles = endPoints.get(path);
-//
-//                // Kullanıcının JWT içindeki rollerine göre erişim izni kontrol edilir.
-//                String token = request.getHeaders().getFirst("Authorization");
-//                token=token.substring(7);
-//                Claims claims = jwtUtils.getClaims(token);
-//                String userRole = claims.get("role", String.class);
-//                System.out.println(userRole);
-//                return allowedRoles.contains(userRole);
-//            };
-
     private boolean isSecured(ServerHttpRequest request, String userRole){
         String path = request.getURI().getPath();
         List<String> allowedRoles = endPoints.get(path);
         return allowedRoles.contains(userRole);
-    }
-
-    public void addToCache(String token, String userName, String role){
-        currentTokens.addToCache(token, userName, role);
-    }
-
-    public void removeFromCache(String token){
-        currentTokens.removeFromCache(token);
     }
 }

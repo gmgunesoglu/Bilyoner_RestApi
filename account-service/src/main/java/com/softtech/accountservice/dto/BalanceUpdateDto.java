@@ -3,8 +3,7 @@ package com.softtech.accountservice.dto;
 import lombok.Data;
 
 @Data
-public class BalanceTransactionDto {
-
-    private TransactionCouponType transactionType;
+public class BalanceUpdateDto {
+    private TransactionMoveType transactionType;
     private double transactionAmount;
 }

@@ -16,10 +16,14 @@ public class AccountController {
 
     private final MemberService memberService;
 
-
     @GetMapping("/test")
     public String test(){
         return "account service test ok";
+    }
+
+    @GetMapping
+    public AccountDetailDto get(HttpServletRequest request){
+        return memberService.get(request);
     }
 
     @PostMapping("/register")
