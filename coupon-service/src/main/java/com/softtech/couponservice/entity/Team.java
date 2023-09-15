@@ -3,6 +3,8 @@ package com.softtech.couponservice.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Table(name = "team")
 @Data
@@ -44,4 +46,12 @@ public class Team {
             nullable = false
     )
     private boolean statue;
+
+    @OneToMany(targetEntity = Event.class)
+    @JoinColumn(name = "home_team_id",referencedColumnName = "id")
+    private List<Event> homeEvents;
+
+    @OneToMany(targetEntity = Event.class)
+    @JoinColumn(name = "away_team_id",referencedColumnName = "id")
+    private List<Event> awayEvents;
 }
