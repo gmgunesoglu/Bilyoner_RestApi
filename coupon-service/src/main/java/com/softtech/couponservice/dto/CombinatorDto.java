@@ -1,32 +1,31 @@
 package com.softtech.couponservice.dto;
 
+import com.softtech.couponservice.entity.MatchResultType;
+import com.softtech.couponservice.entity.MatchType;
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
-public class EventDto {
+public class CombinatorDto {
 
     private Long id;
-    private Date startDate;
-    private String homeTeam;
-    private String awayTeam;
     private int mbsPoint;
     private float winPoint;
     private float drawPoint;
     private float losePoint;
+    private Date startDate;
+    private MatchResultType bet;
 
-    public EventDto() {
+    public CombinatorDto() {
     }
 
-    public EventDto(Long id, Date startDate, String homeTeam, String awayTeam, int mbsPoint, float winPoint, float drawPoint, float losePoint) {
+    public CombinatorDto(Long id, int mbsPoint, float winPoint, float drawPoint, float losePoint, Date startDate) {
         this.id = id;
-        this.startDate = startDate;
-        this.homeTeam = homeTeam;
-        this.awayTeam = awayTeam;
         this.mbsPoint = mbsPoint;
         this.winPoint = winPoint;
         this.drawPoint = drawPoint;
         this.losePoint = losePoint;
+        this.startDate = startDate;
     }
 }

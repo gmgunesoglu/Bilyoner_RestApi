@@ -18,8 +18,8 @@ public class EventController {
     private final EventService eventService;
 
     @GetMapping("/{id}")
-    public EventDetailDto get(@PathVariable Long eventId){
-        return eventService.get(eventId);
+    public EventDetailDto get(@PathVariable Long id){
+        return eventService.get(id);
     }
 
     @GetMapping

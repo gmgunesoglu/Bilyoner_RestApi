@@ -12,4 +12,13 @@ public class TeamWithMatchesDto {
     private String name;
     private MatchType type;
     private List<EventDto> matches;
+
+    public TeamWithMatchesDto() {
+    }
+
+    public TeamWithMatchesDto(Long id, String name, MatchType type) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+    }
 }

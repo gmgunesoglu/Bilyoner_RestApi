@@ -12,5 +12,14 @@ public class CouponDetailDto {
     private Date startDate;
     private int totalMatch;
     private float totalRatio;
-    private List<EventDetailDto> matches;
+    private List<BetDetailDto> matches;
+
+    public CouponDetailDto() {
+    }
+
+    public CouponDetailDto(Long id, Date startDate, float totalRatio) {
+        this.id = id;
+        this.startDate = startDate;
+        this.totalRatio = totalRatio;
+    }
 }

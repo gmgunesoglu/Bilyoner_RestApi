@@ -42,13 +42,13 @@ public class Event {
     private Date startDate;
 
     @Column(
-            name = "home_team",
+            name = "home_team_id",
             nullable = false
     )
     private Long homeTeamId;
 
     @Column(
-            name = "away_team",
+            name = "away_team_id",
             nullable = false
     )
     private Long awayTeamId;
@@ -105,11 +105,11 @@ public class Event {
     private int concedeGoal;
 
     @Column(
-            name = "match_result_type",
+            name = "match_result",
             length = 4
     )
     @Enumerated(EnumType.STRING)
-    private MatchResultType matchResultType;
+    private MatchResultType matchResult;
 
     @Column(
             name="statue",

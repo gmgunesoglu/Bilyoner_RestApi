@@ -19,4 +19,11 @@ public class EventCoupon {
     @Id
     @Column(name="coupon_id")
     private Long couponId;
+
+    @Column(
+            name = "bet",
+            length = 4
+    )
+    @Enumerated(EnumType.STRING)
+    private MatchResultType bet;
 }

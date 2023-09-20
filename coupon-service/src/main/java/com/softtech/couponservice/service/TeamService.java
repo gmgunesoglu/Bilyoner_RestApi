@@ -4,6 +4,7 @@ import com.softtech.couponservice.dto.CreateTeamDto;
 import com.softtech.couponservice.dto.TeamDto;
 import com.softtech.couponservice.dto.TeamWithMatchesDto;
 import com.softtech.couponservice.dto.UpdateTeamDto;
+import com.softtech.couponservice.entity.MatchType;
 
 import java.util.List;
 
@@ -13,4 +14,5 @@ public interface TeamService {
     TeamDto add(CreateTeamDto dto);
     TeamDto update(UpdateTeamDto dto, Long id);
     String disable(Long id);
+    Long getId(String teamName, MatchType matchType);
 }

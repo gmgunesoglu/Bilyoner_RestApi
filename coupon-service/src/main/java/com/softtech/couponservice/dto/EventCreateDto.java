@@ -9,10 +9,10 @@ import java.util.Date;
 public class EventCreateDto {
 
     private MatchType matchType;
-    private Date date;
+    private Date startDate;
     private String homeTeam;
     private String awayTeam;
-    private int mbsPoint;
+    private byte mbsPoint;
     private float winRatio;
     private float loseRatio;
 }

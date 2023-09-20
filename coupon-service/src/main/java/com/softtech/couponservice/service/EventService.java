@@ -6,11 +6,9 @@ import com.softtech.couponservice.dto.EventDetailDto;
 import java.util.List;
 
 public interface EventService {
-    EventDetailDto get(Long eventId);
 
     List<EventDetailDto> getAll();
-
+    EventDetailDto get(Long id);
     EventDetailDto add(EventCreateDto dto);
-
     String disable(Long id);
 }
