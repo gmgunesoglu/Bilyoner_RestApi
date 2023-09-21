@@ -10,7 +10,7 @@ public interface CouponService {
     List<CouponDto> getAll();
     CouponDetailDto get(Long id);
     String purchase(HttpServletRequest request, List<CouponPurchaseDto> dtos);
-    String cancel(HttpServletRequest request, CouponCancelDto dto);
+    String cancel(HttpServletRequest request, Long id);
     List<CouponHistoryDto> getAllPurchased(HttpServletRequest request);
     CouponHistoryDetailDto getPurchased(HttpServletRequest request, Long id);
 

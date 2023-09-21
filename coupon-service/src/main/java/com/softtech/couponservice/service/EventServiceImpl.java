@@ -4,11 +4,13 @@ import com.softtech.couponservice.dto.CombinatorDto;
 import com.softtech.couponservice.dto.CouponCreateDto;
 import com.softtech.couponservice.dto.EventCreateDto;
 import com.softtech.couponservice.dto.EventDetailDto;
-import com.softtech.couponservice.entity.Event;
-import com.softtech.couponservice.entity.MatchType;
+import com.softtech.couponservice.entity.*;
 import com.softtech.couponservice.exceptionhandling.GlobalRuntimeException;
+import com.softtech.couponservice.repository.CouponRepository;
+import com.softtech.couponservice.repository.EventCouponRepository;
 import com.softtech.couponservice.repository.EventRepository;
 import com.softtech.couponservice.repository.TeamRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,10 @@ public class EventServiceImpl implements EventService{
     private final TeamRepository teamRepository;
 
     private final CouponService couponService;
+
+    private final CouponRepository couponRepository;
+
+    private final EventCouponRepository eventCouponRepository;
 
 
     @Override
@@ -105,8 +111,43 @@ public class EventServiceImpl implements EventService{
     }
 
     @Override
+    @Transactional
     public String disable(Long id) {
-        return null;
+
+        // check event
+        Event event = repository.findById(id).get();
+        if(event == null){
+            throw new GlobalRuntimeException("Event not found!",HttpStatus.NOT_FOUND);
+        }
+        if(!event.isStatue()){
+            throw new GlobalRuntimeException("Event is already disabled!",HttpStatus.BAD_REQUEST);
+        }
+        if(!new Date(System.currentTimeMillis()+300000).before(event.getStartDate())){
+            throw new GlobalRuntimeException("Events 5 minutes until start can't remove!",HttpStatus.BAD_REQUEST);
+        }
+
+        // remove event from relating coupons and save
+        List<Coupon> coupons = repository.getRelatingCoupons(event.getId());
+        float ratio;
+        EventCoupon eventCoupon;
+        for(Coupon coupon : coupons){
+            MatchResultType matchResultType = eventCouponRepository.getMatchResultType(id,coupon.getId());
+            if(matchResultType==MatchResultType.WIN){
+                ratio = event.getWinPoint();
+            }else if(matchResultType==MatchResultType.DRAW){
+                ratio = event.getDrawPoint();
+            }else{
+                ratio = event.getLosePoint();
+            }
+            coupon.setRatio(coupon.getRatio()/ratio);
+            couponRepository.save(coupon);
+        }
+        eventCouponRepository.deleteAllByEventId(id);
+        event.setStatue(false);
+        repository.save(event);
+
+        // return
+        return "Event removed!";
     }
 
     private void eventCombinator(Event event){
@@ -153,9 +194,6 @@ public class EventServiceImpl implements EventService{
     }
 
     private float calculatePoint(float ratio){
-        return (0.4f/ratio)+0.6f;
+        return (0.35f/ratio)+0.65f;
     }
-
-
-
 }

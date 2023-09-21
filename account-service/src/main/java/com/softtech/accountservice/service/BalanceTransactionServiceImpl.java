@@ -83,18 +83,17 @@ public class BalanceTransactionServiceImpl implements BalanceTransactionService{
 
 
     @Override
-    public Boolean balanceTransaction(HttpServletRequest request, BalanceTransactionDto dto) {
+    public Boolean balanceTransaction(BalanceTransactionDto dto) {
 
         // get member id from request
-        String jwt = request.getHeader("Authorization").substring(7);
-        Long memberId = jwtService.getId(jwt);
+        Long memberId = dto.getMemberId();
 
         // get current balance
         double oldBalance = getCurrentBalance(memberId);
 
         // check new balance
         double newBalance;
-        if(dto.getTransactionType().equals("COUPON_PURCHASE")) {
+        if(dto.getTransactionType()==TransactionCouponType.COUPON_PURCHASE) {
             newBalance = oldBalance-dto.getTransactionAmount();
             if(newBalance<0){
                 return false;

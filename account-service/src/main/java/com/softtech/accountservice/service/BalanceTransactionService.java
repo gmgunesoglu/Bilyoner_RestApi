@@ -12,5 +12,5 @@ public interface BalanceTransactionService {
 
     BalanceTransactionDetailDto balanceUpdate(HttpServletRequest request, BalanceUpdateDto dto);
 
-    Boolean balanceTransaction(HttpServletRequest request, BalanceTransactionDto dto);
+    Boolean balanceTransaction(BalanceTransactionDto dto);
 }

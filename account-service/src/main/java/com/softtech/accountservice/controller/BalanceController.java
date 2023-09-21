@@ -23,8 +23,8 @@ public class BalanceController {
         return balanceTransactionService.balanceUpdate(request,dto);
     }
 
-    @PostMapping("/transaction")
-    Boolean balanceTransaction(HttpServletRequest request, @RequestBody BalanceTransactionDto dto){
-        return balanceTransactionService.balanceTransaction(request,dto);
+    @PostMapping("/transactions")
+    Boolean balanceTransaction(@RequestBody BalanceTransactionDto dto){
+        return balanceTransactionService.balanceTransaction(dto);
     }
 }

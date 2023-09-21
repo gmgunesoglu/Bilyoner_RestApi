@@ -55,8 +55,8 @@ public class AuthenticationFilter implements GatewayFilter {
         ServerHttpRequest request = exchange.getRequest();
 
         // request path i yanlış ise not found dönsün
-        String url = getUrlWithoutPathVariable(request.getURI().getPath());
-        List<String> requiredRoles = endPoints.get(url);
+        String path = getUrlWithoutPathVariable(request.getURI().getPath());
+        List<String> requiredRoles = endPoints.get(path);
         if(requiredRoles==null){
             return onError(exchange, HttpStatus.NOT_FOUND);
         }
@@ -75,7 +75,7 @@ public class AuthenticationFilter implements GatewayFilter {
         // bu token ı ben mi ürettiysem, kullanıcının yetkisi yeterlimi?
         final String jwtToken = authHeader.substring(7);
         final String userRole = currentTokens.getRoleOfToken(jwtToken);
-        if (userRole!=null && isSecured(request,userRole)) {
+        if (userRole!=null && isSecured(path,userRole)) {
             // yetkisi var
             return chain.filter(exchange);
         }else{
@@ -90,8 +90,7 @@ public class AuthenticationFilter implements GatewayFilter {
         return response.setComplete();
     }
 
-    private boolean isSecured(ServerHttpRequest request, String userRole){
-        String path = request.getURI().getPath();
+    private boolean isSecured(String path, String userRole){
         List<String> allowedRoles = endPoints.get(path);
         return allowedRoles.contains(userRole);
     }

@@ -8,6 +8,9 @@ eureka:
 server:
   port: 8090
 
+jwt:
+  SECRET_KEY: e34bc93bce34083f4dc6900e986019e7f08cf994c01046348dd69f8f05f00cb9
+
 spring:
   application:
     name: coupons
@@ -25,6 +28,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+application:
+  config:
+    balance-controller-url: http://localhost:8070/balance
+
 #  zipkin:
 #    base-url: http://localhost:9411
 

@@ -4,7 +4,6 @@ import com.softtech.couponservice.dto.CreateTeamDto;
 import com.softtech.couponservice.dto.TeamDto;
 import com.softtech.couponservice.dto.TeamWithMatchesDto;
 import com.softtech.couponservice.dto.UpdateTeamDto;
-import com.softtech.couponservice.entity.MatchType;
 import com.softtech.couponservice.entity.Team;
 import com.softtech.couponservice.exceptionhandling.GlobalRuntimeException;
 import com.softtech.couponservice.repository.EventRepository;
@@ -40,13 +39,17 @@ public class TeamServiceImpl implements TeamService{
     @Override
     public TeamDto add(CreateTeamDto dto) {
 
-        // check if not exist
+        // check and create
         Team team = repository.getTeamByNameAndMatchType(dto.getName(),dto.getMatchType());
         if(team!=null){
-            throw new GlobalRuntimeException("Team already exists!",HttpStatus.BAD_REQUEST);
+            if(team.isStatue()){
+                throw new GlobalRuntimeException("Team already exists!",HttpStatus.BAD_REQUEST);
+            }
+        }else{
+            team = new Team();
         }
-        // add
-        team = new Team();
+
+        // set team
         team.setName(dto.getName());
         team.setMatchType(dto.getMatchType());
         team.setStatue(true);
@@ -62,16 +65,50 @@ public class TeamServiceImpl implements TeamService{
 
     @Override
     public TeamDto update(UpdateTeamDto dto, Long id) {
-        return null;
+
+        // check team
+        Team team = repository.findById(id).get();
+        if(team==null){
+            throw new GlobalRuntimeException("Team not found!",HttpStatus.NOT_FOUND);
+        }
+        if(!team.isStatue()){
+            throw new GlobalRuntimeException("Team is disabled!",HttpStatus.BAD_REQUEST);
+        }
+
+        // check name is in use
+        Team checkTeam = repository.getTeamByNameAndMatchType(dto.getName(),team.getMatchType());
+        if(checkTeam!=null){
+            throw new GlobalRuntimeException("This team name has been already used!",HttpStatus.BAD_REQUEST);
+        }
+
+        // update team
+        team.setName(dto.getName());
+        team = repository.save(team);
+
+        // create return dto and return
+        TeamDto rDto = new TeamDto();
+        rDto.setType(team.getMatchType());
+        rDto.setName(team.getName());
+        rDto.setId(team.getId());
+        return rDto;
     }
 
     @Override
     public String disable(Long id) {
-        return null;
-    }
 
-    @Override
-    public Long getId(String teamName, MatchType matchType) {
-        return repository.getId(teamName,matchType);
+        // check team
+        Team team = repository.findById(id).get();
+        if(team==null){
+            throw new GlobalRuntimeException("Team not found!",HttpStatus.NOT_FOUND);
+        }
+        if(!team.isStatue()){
+            throw new GlobalRuntimeException("Team is already disabled!",HttpStatus.BAD_REQUEST);
+        }
+
+        // disable and save
+        team.setStatue(false);
+        repository.save(team);
+
+        return "Team disabled.";
     }
 }

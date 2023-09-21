@@ -14,5 +14,4 @@ public interface TeamService {
     TeamDto add(CreateTeamDto dto);
     TeamDto update(UpdateTeamDto dto, Long id);
     String disable(Long id);
-    Long getId(String teamName, MatchType matchType);
 }

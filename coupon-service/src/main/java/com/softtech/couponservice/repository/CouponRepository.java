@@ -14,7 +14,7 @@ import java.util.List;
 public interface CouponRepository extends JpaRepository<Coupon,Long> {
 
     @Query("SELECT new com.softtech.couponservice.dto.CouponDto" +
-            "(c.id,c.startDate,c.ratio) FROM Coupon c WHERE c.startDate > :date")
+            "(c.id,c.startDate,c.ratio) FROM Coupon c WHERE c.startDate > :date AND c.payAmount = 0")
     List<CouponDto> getAllCouponDto(Date date);
 
     @Query("SELECT new com.softtech.couponservice.dto.CouponDetailDto" +
@@ -28,4 +28,9 @@ public interface CouponRepository extends JpaRepository<Coupon,Long> {
             "INNER JOIN Team t1 ON e.homeTeamId = t1.id " +
             "INNER JOIN Team t2 ON e.awayTeamId = t2.id WHERE c.id = :couponId")
     List<BetDetailDto> getMatches(Long couponId);
+
+    @Query("SELECT ct.memberId FROM Coupon c " +
+            "INNER JOIN CouponTransaction ct ON c.id = ct.couponId " +
+            "WHERE c.id = :couponId ORDER BY ct.date LIMIT 1")
+    Long getBuyerIdOfCoupon(Long couponId);
 }

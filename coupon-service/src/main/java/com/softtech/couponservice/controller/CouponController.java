@@ -30,9 +30,9 @@ public class CouponController {
         return couponService.purchase(request,dtos);
     }
 
-    @PostMapping("/cancel")
-    public String cancel(HttpServletRequest request, @RequestBody CouponCancelDto dto){
-        return couponService.cancel(request,dto);
+    @DeleteMapping("/cancel/{id}")
+    public String cancel(HttpServletRequest request, @PathVariable Long id){
+        return couponService.cancel(request,id);
     }
 
     @GetMapping("/history")

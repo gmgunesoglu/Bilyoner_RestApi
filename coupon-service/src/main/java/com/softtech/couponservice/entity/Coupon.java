@@ -59,6 +59,7 @@ public class Coupon {
     @JoinColumn(name = "coupon_id",referencedColumnName = "id")
     private List<EventCoupon> eventCoupons;
 
-    @OneToOne(mappedBy = "coupon", cascade = CascadeType.ALL)
-    private CouponTransaction couponTransaction;
+    @OneToMany(targetEntity = CouponTransaction.class)
+    @JoinColumn(name = "coupon_id",referencedColumnName = "id")
+    private List<CouponTransaction> couponTransactions;
 }

@@ -1,4 +1,4 @@
-package com.softtech.accountservice.dto;
+package com.softtech.couponservice.dto;
 
 import lombok.Data;
 

@@ -11,16 +11,16 @@ import java.util.List;
 
 public interface TeamRepository extends JpaRepository<Team, Long> {
 
-    @Query("SELECT t.id FROM Team t WHERE t.name = :teamName AND t.matchType = :matchType")
+    @Query("SELECT t.id FROM Team t WHERE t.name = :teamName AND t.matchType = :matchType AND t.statue = true")
     Long getId(String teamName, MatchType matchType);
 
     @Query("SELECT new com.softtech.couponservice.dto.TeamDto" +
-            "(t.id,t.name,t.matchType) FROM Team t")
+            "(t.id,t.name,t.matchType) FROM Team t WHERE t.statue = true")
     List<TeamDto> getAllTeamDto();
 
     @Query("SELECT new com.softtech.couponservice.dto.TeamWithMatchesDto" +
             "(t.id,t.name,t.matchType) " +
-            "FROM Team t WHERE t.id = :id")
+            "FROM Team t WHERE t.id = :id AND t.statue = true")
     TeamWithMatchesDto findTeamDto(Long id);
 
     Team getTeamByNameAndMatchType(String name, MatchType matchType);

@@ -27,20 +27,23 @@ public class CouponTransaction {
     private Long id;
 
     @Column(
-            name = "buyer_id",
+            name = "member_id",
             nullable = false
     )
-    private Long buyerId;
-
-//    @Column(
-//            name = "coupon_id",
-//            nullable = false
-//    )
-//    private Long couponId;
+    private Long memberId;
 
     @Column(
-            name = "coupon_transaction_type"
+            name = "coupon_id",
+            nullable = false
     )
+    private Long couponId;
+
+    @Column(
+            name = "coupon_transaction_type",
+            length = 15,
+            nullable = false
+    )
+    @Enumerated(EnumType.STRING)
     private CouponTransactionType couponTransactionType;
 
     @Column(
@@ -52,8 +55,4 @@ public class CouponTransaction {
             name = "date"
     )
     private Date date;
-
-    @OneToOne()
-    @JoinColumn(name = "coupon_id",referencedColumnName = "id")
-    private Coupon coupon;
 }
