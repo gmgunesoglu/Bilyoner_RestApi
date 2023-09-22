@@ -1,7 +1,6 @@
 package com.softtech.couponservice.client;
 
 import com.softtech.couponservice.dto.BalanceTransactionDto;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

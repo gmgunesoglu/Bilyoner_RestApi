@@ -45,13 +45,8 @@ public class CouponController {
         return couponService.getPurchased(request,id);
     }
 
-    @GetMapping("test")
-    public String test(){
-        return "test";
-    }
-
-    @GetMapping("test/{id}")
-    public  String testId(@PathVariable Long id){
-        return "testId: "+id;
+    @GetMapping("/unresolved-coupons/member/{memberId}")
+    public List<Long> getAllUnresolvedCouponsId(@PathVariable Long memberId){
+        return couponService.getAllUnresolvedCouponsId(memberId);
     }
 }

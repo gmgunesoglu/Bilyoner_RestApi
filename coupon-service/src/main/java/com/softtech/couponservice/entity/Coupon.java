@@ -40,6 +40,11 @@ public class Coupon {
     private float ratio;
 
     @Column(
+            name = "member_id"
+    )
+    private Long memberId;
+
+    @Column(
             name = "pay_amount"
     )
     private double payAmount;

@@ -27,12 +27,6 @@ public class CouponTransaction {
     private Long id;
 
     @Column(
-            name = "member_id",
-            nullable = false
-    )
-    private Long memberId;
-
-    @Column(
             name = "coupon_id",
             nullable = false
     )

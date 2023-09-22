@@ -1,6 +1,7 @@
 package com.softtech.accountservice.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.softtech.accountservice.client.CouponClient;
 import com.softtech.accountservice.dto.*;
 import com.softtech.accountservice.entity.Member;
 import com.softtech.accountservice.exceptionhandling.GlobalRuntimeException;
@@ -13,6 +14,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService{
@@ -23,6 +26,7 @@ public class MemberServiceImpl implements MemberService{
     private final MemberRepository repository;
     private final BalanceTransactionService balanceTransactionService;
     private final JwtUtil jwtService;
+    private final CouponClient couponClient;
 
     @Override
     public AccountDetailDto get(HttpServletRequest request) {
@@ -230,6 +234,18 @@ public class MemberServiceImpl implements MemberService{
         }
         if(!passwordEncoder.matches(dto.getPassword(),member.getPassword())){
             throw new GlobalRuntimeException("Password didn't match!",HttpStatus.BAD_REQUEST);
+        }
+
+        // check balance of member
+        double amount = balanceTransactionService.getCurrentBalance(member.getId());
+        if(amount!=0){
+            throw new GlobalRuntimeException("You have to with-draw your amount: "+amount,HttpStatus.BAD_REQUEST);
+        }
+
+        // check coupons of member
+        List<Long> couponsId = couponClient.getAllUnresolvedCouponsId(member.getId());
+        if(couponsId.size()>0){
+            throw new GlobalRuntimeException("You have unresolved coupons: "+couponsId.toString(),HttpStatus.BAD_REQUEST);
         }
 
         // disable

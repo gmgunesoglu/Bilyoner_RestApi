@@ -11,9 +11,9 @@ import com.softtech.couponservice.exceptionhandling.GlobalRuntimeException;
 import com.softtech.couponservice.repository.CouponRepository;
 import com.softtech.couponservice.repository.CouponTransactionRepository;
 import com.softtech.couponservice.repository.EventCouponRepository;
+import com.softtech.couponservice.repository.EventRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +28,9 @@ public class CouponServiceImpl implements CouponService{
     private final JwtUtil jwtService;
     private final CouponRepository repository;
     private final EventCouponRepository eventCouponRepository;
-    private final AccountClient accountClient;
+    private final EventRepository eventRepository;
     private final CouponTransactionRepository couponTransactionRepository;
+    private final AccountClient accountClient;
 
     private final double minPayAmount=35;
 
@@ -78,11 +79,11 @@ public class CouponServiceImpl implements CouponService{
             CouponTransaction couponTransaction = new CouponTransaction();
             couponTransaction.setDate(new Date());
             couponTransaction.setAmount(dto.getPayAmount());
-            couponTransaction.setMemberId(memberId);
             couponTransaction.setCouponId(dto.getCouponId());
             couponTransaction.setCouponTransactionType(CouponTransactionType.COUPON_PURCHASE);
             couponTransactions.add(couponTransaction);
             coupon.setPayAmount(dto.getPayAmount());
+            coupon.setMemberId(memberId);
             coupons.add(coupon);
         }
 
@@ -129,7 +130,7 @@ public class CouponServiceImpl implements CouponService{
         if(coupon.getPayAmount()==0){
             throw new GlobalRuntimeException("Coupon not purchased!",HttpStatus.BAD_REQUEST);
         }
-        if(!repository.getBuyerIdOfCoupon(coupon.getId()).equals(memberId)){
+        if(!coupon.getMemberId().equals(memberId)){
             throw new GlobalRuntimeException("This coupon is not belong to you!\nCoupon id: "+id,HttpStatus.BAD_REQUEST);
         }
         if(!new Date(System.currentTimeMillis()+300000).before(coupon.getStartDate())){
@@ -139,9 +140,9 @@ public class CouponServiceImpl implements CouponService{
         CouponTransaction couponTransaction = new CouponTransaction();
         couponTransaction.setDate(new Date());
         couponTransaction.setAmount(coupon.getPayAmount());
-        couponTransaction.setMemberId(memberId);
         couponTransaction.setCouponId(id);
         couponTransaction.setCouponTransactionType(CouponTransactionType.COUPON_CANCEL);
+        coupon.setMemberId(null);
         coupon.setPayAmount(0);
 
         // pay-back
@@ -168,16 +169,30 @@ public class CouponServiceImpl implements CouponService{
         String jwt = request.getHeader("Authorization").substring(7);
         Long memberId = jwtService.getId(jwt);
 
-        // get all purchased coupons
-
-
         // create CouponHistoryDto list and return
-        return null;
+        List<CouponHistoryDto> dtos = repository.getAllCouponHistoryDto(memberId);
+        for (CouponHistoryDto dto : dtos){
+            dto.setWonAmount(couponTransactionRepository.getWonAmount(dto.getId()).orElse(0D));
+        }
+        return dtos;
     }
 
     @Override
     public CouponHistoryDetailDto getPurchased(HttpServletRequest request, Long id) {
-        return null;
+
+        // get memberId
+        String jwt = request.getHeader("Authorization").substring(7);
+        Long memberId = jwtService.getId(jwt);
+
+        // create CouponHistoryDetailDto and return
+        CouponHistoryDetailDto dto = repository.getCouponHistoryDetailDto(memberId,id);
+        if(dto==null){
+            throw new GlobalRuntimeException("Coupon not found!",HttpStatus.NOT_FOUND);
+        }
+        dto.setWonAmount(couponTransactionRepository.getWonAmount(dto.getId()).orElse(0D));
+        List<EventHistoryDto> matches = repository.getAllEventHistoryDto(id);
+        dto.setMatches(matches);
+        return dto;
     }
 
     @Override
@@ -197,6 +212,11 @@ public class CouponServiceImpl implements CouponService{
                 eventCouponRepository.save(eventCoupon);
             }
         }
+    }
+
+    @Override
+    public List<Long> getAllUnresolvedCouponsId(Long memberId) {
+        return repository.getAllUnresolvedCouponsId(memberId);
     }
 
 }

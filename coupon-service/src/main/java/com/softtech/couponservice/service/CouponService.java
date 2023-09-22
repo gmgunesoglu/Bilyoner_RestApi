@@ -15,4 +15,6 @@ public interface CouponService {
     CouponHistoryDetailDto getPurchased(HttpServletRequest request, Long id);
 
     void saveCoupons(EventCombinator eventCombinator);
+
+    List<Long> getAllUnresolvedCouponsId(Long memberId);
 }
